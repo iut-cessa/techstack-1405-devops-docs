@@ -1,5 +1,5 @@
 ---
-title: TechStack - DevOps 1405
+title: TechStack 1405 - DevOps
 type: home
 ---
 

@@ -63,7 +63,7 @@ Whole section forced left-to-right.
 
 ## Deployment
 
-1. Push this repo to any GitHub account (e.g. `alirezaja1384/techstack-devops-1405` or `iut-cessa/techstack-devops-1405`)
+1. Push this repo to any GitHub account (e.g. `alirezaja1384/techstack-1405-devops-docs` or `iut-cessa/techstack-1405-devops-docs`)
 2. Repo **Settings → Pages → Source: GitHub Actions** (one-time, per repo)
 3. Push to `main` — `.github/workflows/deploy.yml` builds and deploys
 4. Site URL: `https://<owner>.github.io/<repo>/` — computed automatically, no config change needed
