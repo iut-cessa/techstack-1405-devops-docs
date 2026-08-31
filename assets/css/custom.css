@@ -9,7 +9,9 @@
 
 html:lang(fa) {
   --MAIN-font: 'Vazirmatn', Tahoma, 'Segoe UI', sans-serif;
+  --MAIN-TITLES-font: 'Vazirmatn', Tahoma, 'Segoe UI', sans-serif;
   --MAIN-TITLES-TEXT-font: 'Vazirmatn', Tahoma, 'Segoe UI', sans-serif;
+  --LOGO-font: 'Vazirmatn', Tahoma, 'Segoe UI', sans-serif;
   --MAIN-font-variation-settings: normal;
   --MAIN-font-weight: 400;
   --CODE-font: Consolas, menlo, monospace;
