@@ -1,0 +1,73 @@
+/* ===================================================================
+   Persian typography
+   Theme fonts are driven by CSS variables (see theme assets/css/variables.css).
+   :lang(fa) matches lang="fa-IR" on <html> (prefix language matching),
+   unlike html[lang='fa'] which is an exact-match selector and would
+   never match. This bug previously left Persian text on the fallback
+   font — do not switch back to attribute selectors here.
+   =================================================================== */
+
+html:lang(fa) {
+  --MAIN-font: 'Vazirmatn', Tahoma, 'Segoe UI', sans-serif;
+  --MAIN-TITLES-TEXT-font: 'Vazirmatn', Tahoma, 'Segoe UI', sans-serif;
+  --MAIN-font-variation-settings: normal;
+  --MAIN-font-weight: 400;
+  --CODE-font: Consolas, menlo, monospace;
+  --CODE-font-weight: 400;
+}
+
+/* Persian script needs a taller line box than the theme default */
+html:lang(fa) body {
+  line-height: 1.9;
+}
+
+/* ===================================================================
+   Bidirectional text handling
+   Relearn sets dir="rtl" on <html> for RTL languages.
+
+   Site rule: EVERYTHING is RTL unless explicitly LTR.
+   - All content blocks inherit RTL — including mainly-Persian
+     blocks that merely start with an English term.
+   - Pure-Latin blocks (no Arabic-script character anywhere) are
+     marked LTR by assets/js/custom.js.
+   - Code is always LTR (below), even with Persian comments inside.
+   - Authors can force whole sections with <div dir="ltr"> (README).
+   =================================================================== */
+
+/* Fenced code blocks: always LTR and left-aligned — even when they
+   contain Persian comments; leaving them to the RTL flow scrambles
+   { } ; | and operators. */
+html[dir='rtl'] pre {
+  direction: ltr;
+  text-align: left;
+}
+
+/* Inline code: isolated LTR run so commands like `kubectl get pods`
+   keep their order inside a Persian sentence; Persian text inside
+   the code still renders RTL within the LTR run. */
+html[dir='rtl'] code {
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+/* Author escape hatch documented in README: <div dir="ltr"> for a
+   whole section, <bdi> for a tricky inline fragment. No CSS needed
+   for those — the browser applies them directly. */
+
+/* ===================================================================
+   Sidebar horizontal scroll guard
+   The menu tree must never pan horizontally — long titles wrap.
+   perfect-scrollbar can mis-measure widths in RTL (fractional px at
+   zoom/DPI scaling) and activate its horizontal rail, letting the
+   sidebar shift sideways. assets/js/custom.js clamps scrollLeft to
+   the rest position; here we additionally hide the horizontal rail
+   and make long words wrap instead of overflowing.
+   =================================================================== */
+
+#R-sidebar #R-content-wrapper .ps__rail-x {
+  display: none !important;
+}
+
+#R-sidebar .R-sidebarmenu a {
+  overflow-wrap: break-word;
+}

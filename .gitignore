@@ -1,0 +1,18 @@
+# Hugo build output
+public/
+resources/
+.hugo_build.lock
+
+# OS / editor
+.DS_Store
+
+# Agent configuration / state
+.claude/
+.codex/
+.opencode/
+.cursor/
+.cursorrules
+.cursorignore
+.clinerules
+.windsurf/
+.windsurfrules

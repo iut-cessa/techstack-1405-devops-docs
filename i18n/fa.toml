@@ -1,0 +1,6 @@
+# Project-level overrides for the Relearn theme's Persian strings.
+# Project i18n files take precedence over theme i18n files.
+# Only keys missing/incorrect upstream are listed here.
+
+[home-button]
+other = "خانه"

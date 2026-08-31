@@ -1,0 +1,64 @@
+# NOTE: baseURL is overridden at build time by GitHub Actions (--baseURL flag).
+# This default only matters for local `hugo` builds without the flag.
+baseURL = 'https://alirezaja1384.github.io/techstack-devops-1405/'
+title = 'دوره DevOps'
+
+defaultContentLanguage = 'fa'
+defaultContentLanguageInSubdir = false
+
+theme = 'hugo-theme-relearn'
+
+# enables Relearn's "Last update" footer from commit metadata
+enableGitInfo = true
+
+[markup]
+  [markup.highlight]
+    # emit CSS classes instead of inline colors so the theme's
+    # syntax styles follow the light/dark variant switch
+    noClasses = false
+    lineNos = true
+    lineNumbersInTable = false
+  [markup.goldmark.renderer]
+    # allows <div dir="ltr"> / <bdi> escape hatches in Markdown
+    unsafe = true
+  [markup.tableOfContents]
+    startLevel = 2
+    endLevel = 3
+
+# ---------------------------------------------------------------
+# Languages: Persian (default, RTL) + English (LTR)
+# ---------------------------------------------------------------
+[languages.fa]
+  title = 'دوره DevOps'
+  label = 'فارسی'
+  locale = 'fa-IR'
+  direction = 'rtl'
+  contentDir = 'content'
+  weight = 1
+
+# ---------------------------------------------------------------
+# Theme params (Relearn)
+# ---------------------------------------------------------------
+[params]
+  editURL = 'https://github.com/iut-cessa/techstack-devops-1405-docs/edit/main/${FilePath}'
+
+  collapsibleMenu = true
+  showVisitedLinks = false
+
+# theme variants: auto (follows OS + manual toggle), plus explicit light/dark
+[[params.themeVariant]]
+  identifier = 'auto'
+  name = 'Auto'
+  auto = ['relearn-light', 'relearn-dark']
+
+[[params.themeVariant]]
+  identifier = 'relearn-light'
+  name = 'Light'
+
+[[params.themeVariant]]
+  identifier = 'relearn-dark'
+  name = 'Dark'
+
+# search: index English terms (code, commands) inside the Persian index too
+[params.search.adapter.params]
+  additionalContentLanguage = ['en']

@@ -1,0 +1,67 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # full history, needed for "Last update" GitInfo
+          submodules: recursive # Relearn theme
+
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v3
+        with:
+          hugo-version: '0.165.0'
+          extended: true
+
+      - name: Compute baseURL
+        run: |
+          OWNER=$(echo "${GITHUB_REPOSITORY_OWNER}" | tr '[:upper:]' '[:lower:]')
+          REPO=$(echo "${GITHUB_REPOSITORY#*/}" | tr '[:upper:]' '[:lower:]')
+          if [ "${REPO}" = "${OWNER}.github.io" ]; then
+            BASEURL="https://${OWNER}.github.io/"
+          else
+            BASEURL="https://${OWNER}.github.io/${REPO}/"
+          fi
+          # Optional override for custom domains:
+          # repo Settings -> Secrets and variables -> Actions -> Variables -> PAGES_BASEURL
+          if [ -n "${{ vars.PAGES_BASEURL }}" ]; then
+            BASEURL="${{ vars.PAGES_BASEURL }}"
+          fi
+          echo "BASEURL=${BASEURL}" >> "$GITHUB_ENV"
+          echo "Deploying to ${BASEURL}"
+
+      - name: Build
+        run: hugo --gc --minify --baseURL "$BASEURL"
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
