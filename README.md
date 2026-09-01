@@ -1,30 +1,63 @@
-# DevOps Course Docs — دورنوشت‌های دوره DevOps
+# TechStack DevOps Course Notes
 
-Documentation site for the DevOps course. Static site generated with [Hugo](https://gohugo.io/) + [Relearn theme](https://mcshelby.github.io/hugo-theme-relearn/), deployed to GitHub Pages via GitHub Actions.
+Persian course notes and exercises for the TechStack DevOps course. The site is built with [Hugo](https://gohugo.io/) and the [Relearn](https://mcshelby.github.io/hugo-theme-relearn/) documentation theme, then deployed to GitHub Pages with GitHub Actions.
 
-- Persian (RTL, [Vazirmatn](https://github.com/rastikerdar/vazirmatn) font)
-- Markdown chapters, dark/light mode, search
-- Portable: the same repo deploys to **any** GitHub account/repo — `baseURL` is computed at build time
+## Features
 
-## Local development
+- Persian, right-to-left content using the [Vazirmatn](https://github.com/rastikerdar/vazirmatn) font
+- Search, syntax highlighting, and automatic light/dark themes
+- Markdown-based chapters and lessons
+- Automatic GitHub Pages deployment from `main`
+- Repository-aware deployment URLs, with optional custom-domain support
+
+## Prerequisites
+
+- Git
+- [Hugo Extended](https://gohugo.io/installation/) 0.141.0 or newer (CI uses 0.165.0)
+
+## Run locally
+
+Clone the repository with its theme submodule:
 
 ```bash
+git clone --recurse-submodules https://github.com/iut-cessa/techstack-1405-devops-docs.git
+cd techstack-1405-devops-docs
 hugo server -D
-# http://localhost:1313/
 ```
 
-Requires Hugo **extended ≥ 0.141** (pinned CI version: 0.165.0). Clone with `--recurse-submodules` (theme lives in `themes/hugo-theme-relearn`).
+Open <http://localhost:1313/>. The `-D` flag includes draft pages.
 
-## Adding a chapter — افزودن فصل جدید
+If you already cloned the repository without submodules, initialize the theme with:
 
+```bash
+git submodule update --init --recursive
 ```
-content.fa/chapters/03-my-chapter/
-├── _index.md        # chapter intro page
+
+## Project structure
+
+```text
+content/                         Course content
+└── chapters/                    Chapters and lessons
+assets/css/                      Custom styles and fonts
+assets/js/custom.js              RTL/LTR direction handling
+static/fonts/                    Local Vazirmatn font files
+themes/hugo-theme-relearn/       Theme submodule
+hugo.toml                        Hugo configuration
+.github/workflows/deploy.yml     GitHub Pages workflow
+```
+
+## Add a chapter
+
+Create a numbered directory under `content/chapters/`:
+
+```text
+content/chapters/03-my-chapter/
+├── _index.md
 ├── 01-first-lesson.md
 └── 02-second-lesson.md
 ```
 
-`content.fa/chapters/03-my-chapter/_index.md`:
+Use the following front matter in the chapter's `_index.md`:
 
 ```markdown
 ---
@@ -37,48 +70,64 @@ description: توضیح کوتاه برای جست‌وجو
 متن معرفی فصل...
 ```
 
-- **Ordering**: `weight` in front matter (or the numeric folder/file prefix `01-`, `02-`, …)
-- Push to `main` → the site builds and deploys automatically
+Set `weight` to control navigation order. Numeric directory and file prefixes such as `01-` and `02-` also keep the source tree easy to scan.
 
-## Writing mixed Persian/English — نگارش متن دوجهته
+Before committing, preview drafts locally and verify a production build:
 
-Direction follows one rule — **everything is RTL unless explicitly LTR** (logic in `assets/js/custom.js`):
+```bash
+hugo server -D
+hugo --gc --minify
+```
 
-- Persian and mixed Persian/English blocks → RTL, even when they start with an English term ("**Git** یک سیستم ...")
-- Pure-Latin blocks (fully English paragraphs, list items, table cells) → LTR, detected automatically
-- Fenced code blocks and inline code → always LTR, even with Persian comments inside
-- Escape hatches: `<div dir="ltr">…</div>` forces a whole section LTR; `<bdi>fragment</bdi>` isolates a tricky inline piece
+## Write mixed Persian and English
 
-Escape hatches for rare cases:
+Content is right-to-left by default. Direction handling in `assets/js/custom.js` applies these rules:
+
+- Persian and mixed Persian/English blocks are RTL, even if they begin with an English term.
+- Fully English paragraphs, list items, and table cells are detected as LTR.
+- Fenced code blocks and inline code are always LTR, including code with Persian comments.
+- `<div dir="ltr">...</div>` forces an entire section to LTR.
+- `<bdi>...</bdi>` isolates an inline fragment with awkward bidirectional rendering.
+
+For example:
 
 ```markdown
 <div dir="ltr">
 
-Whole section forced left-to-right.
+This entire section is rendered left-to-right.
 
 </div>
 
-این جمله با یک قطعه <bdi>مشکل‌دار</bdi> ایزوله شده است.
+این جمله یک قطعه <bdi>LTR fragment</bdi> دارد.
 ```
 
-## Deployment
+## Deploy to GitHub Pages
 
-1. Push this repo to any GitHub account (e.g. `alirezaja1384/techstack-1405-devops-docs` or `iut-cessa/techstack-1405-devops-docs`)
-2. Repo **Settings → Pages → Source: GitHub Actions** (one-time, per repo)
-3. Push to `main` — `.github/workflows/deploy.yml` builds and deploys
-4. Site URL: `https://<owner>.github.io/<repo>/` — computed automatically, no config change needed
+1. In the GitHub repository, open **Settings → Pages**.
+2. Set **Source** to **GitHub Actions**. This is required once per repository.
+3. Push to `main`. The workflow builds and deploys the site automatically.
 
-**Custom domain** (optional): set repo *variable* `PAGES_BASEURL` (Settings → Secrets and variables → Actions → Variables) and configure DNS.
+The workflow determines the correct project URL at build time:
 
-## Updating the theme
+```text
+https://<owner>.github.io/<repository>/
+```
+
+For a custom domain, create an Actions repository variable named `PAGES_BASEURL` under **Settings → Secrets and variables → Actions → Variables**, then configure the domain's DNS records.
+
+When using this project from another repository, also update `params.editURL` in `hugo.toml` so page-edit links target the correct GitHub repository.
+
+## Update the theme
+
+The Relearn theme is included as a submodule and currently pinned to release 9.0.3. To update it:
 
 ```bash
 git submodule update --remote themes/hugo-theme-relearn
 ```
 
-Pin to a release tag when possible (currently `9.0.3`).
+Review and test the resulting submodule change before committing it. Prefer pinning stable release tags.
 
 ## Licenses
 
-- Font [Vazirmatn](https://github.com/rastikerdar/vazirmatn) — SIL OFL 1.1 (see `static/fonts/OFL.txt`)
-- Theme [Hugo Relearn](https://github.com/McShelby/hugo-theme-relearn) — MIT
+- [Vazirmatn](https://github.com/rastikerdar/vazirmatn) font — SIL Open Font License 1.1; see [`static/fonts/OFL.txt`](static/fonts/OFL.txt)
+- [Hugo Relearn](https://github.com/McShelby/hugo-theme-relearn) theme — MIT License
