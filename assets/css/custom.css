@@ -73,3 +73,9 @@ html[dir='rtl'] code {
 #R-sidebar .R-sidebarmenu a {
   overflow-wrap: break-word;
 }
+
+/* Relearn's generic yellow notice inherits the theme's white caption
+   color, which has insufficient contrast against yellow. */
+.box.cstyle.notices[style*='--VARIABLE-BOX-color: yellow'] > .box-label {
+  color: #1f2937;
+}
