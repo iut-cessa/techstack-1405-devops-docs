@@ -1,0 +1,10 @@
+[Unit]
+Description=Run the sysmon report every 10 minutes
+
+[Timer]
+OnCalendar=*-*-* *:00/10:00
+Persistent=true
+Unit=sysmon-report.service
+
+[Install]
+WantedBy=timers.target

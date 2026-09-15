@@ -1,0 +1,11 @@
+[Unit]
+Description=Generate the sysmon system report
+After=local-fs.target
+
+[Service]
+Type=oneshot
+User=sysmon
+Group=sysmon
+ExecStart=/usr/local/bin/sysmon-report
+StandardOutput=append:/var/log/sysmon/stats.log
+StandardError=append:/var/log/sysmon/error.log
