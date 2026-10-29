@@ -33,7 +33,7 @@ description: اتصال پروژه‌های کانتینری به GitHub Actions
 
 ```yaml
 - name: Log in to GitHub Container Registry
-  uses: docker/login-action@v3
+  uses: docker/login-action@v4
   with:
     registry: ghcr.io
     username: ${{ github.repository_owner }}
@@ -44,28 +44,24 @@ description: اتصال پروژه‌های کانتینری به GitHub Actions
 
 ---
 
-## تگ‌گذاری استاندارد با `docker/metadata-action` و استراتژی تگ‌های شناور
+## تگ‌گذاری ایمیج با `docker/metadata-action`
 
-استفاده از یک تگ منفرد مانند `latest` در چرخه‌های جدی نرم‌افزاری یک ضدارزش (Anti-Pattern) خطرناک است؛ زیرا هیچ ردی از اینکه کدام تغییرات در آن نسخه وجود دارند باقی نمی‌ماند و امکان بازگشت (Rollback) به نسخه‌های قبلی از بین می‌رود.
+اتکای صرف به یک تگ منفرد مانند `latest` پیگیری تغییرات را دشوار می‌کند؛ چون مشخص نیست دقیقاً کدام کامیت یا نسخه درون کانتینر در حال اجراست و بازگشت (Rollback) به نسخه‌های قبل را هم با مشکل مواجه می‌سازد.
 
-در دنیای کانتینرها، دو دسته تگ مکمل با اهداف متفاوت تولید می‌شوند:
+در این دوره و در پایپ‌لاین پروژه، ما ایمیج را در سه سطح مختلف از نسخه‌بندی معنایی (SemVer) به همراه شناسه Git تگ‌گذاری می‌کنیم:
 
-1. **تگ‌های تغییرناپذیر (Immutable Tags):**
-   - **تگ هش کامیت (`sha-xxxxxxx`):** مشخص‌کننده دقیق یک کامیت گیت و امکان بازتولیدپذیری قطعی بیلد.
-   - **تگ کامل نسخه معنایی (`1.0.1`):** برای تثبیت یک نسخه پچ مشخص و تضمین عدم تغییر آن در آینده (ایده‌آل برای Rollback و ممیزی).
-2. **تگ‌های شناور (Floating Tags):**
-   - **تگ ماژور (`1`):** همواره به جدیدترین نگارش سازگار در شاخه نگارش ۱ اشاره می‌کند (مثلاً ابتدا `1.0.0`، سپس `1.0.1` و در آینده `1.1.0`).
-   - **تگ مینور (`1.0`):** به آخرین پچ درون سری `1.0` اشاره دارد.
+1. **تگ کامل (Full SemVer — `1.0.1`):** مشخص‌کننده دقیق نسخه همراه با پچ؛ برای تثبیت قطعی ایمیج در محیط عملیاتی و امکان بازگشت فوری (Rollback).
+2. **ترکیب Major + Minor (`1.0`):** برای دنبال‌کردن جدیدترین پچ‌های درون سری `1.0`.
+3. **تگ Major (`1`):** برای دریافت جدیدترین بهبودهای سازگار درون شاخه نگارش ۱.
+4. **تگ هش کامیت (`sha-xxxxxxx`):** مشخص‌کننده دقیق کامیت گیت برای تضمین بازتولیدپذیری بیلد.
+5. **تگ `latest`:** صرفاً برای شاخه پیش‌فرض و تست‌های سریع در محیط توسعه.
 
-### مزیت تگ‌های چندسطحی در محیط استقرار
-اگر در فایل‌های استقرار یا Docker Compose از تگ شناور Major (مانند `image: ...:1`) استفاده کنید، هر بار که یک انتشار جدید با پچ یا بهبود سازگار منتشر شود، تگ `:1` در رجیستری با لایه‌ها و Digest جدید به‌روزرسانی می‌شود. در نتیجه سیستم استقرار بدون نیاز به ویرایش دستی فایل‌های پیکربندی، تنها با اجرای دستور Pull، آخرین نسخه پایدار را دریافت و جایگزین می‌کند.
-
-اکشن متادیتا این فرآیند چندسطحی را با الگوی استاندارد زیر پیاده‌سازی می‌کند:
+اکشن `docker/metadata-action` به ما اجازه می‌دهد این ترکیب‌ها را بر اساس رویدادهای Git به‌طور خودکار تولید کنیم:
 
 ```yaml
 - name: Extract Docker metadata
   id: meta
-  uses: docker/metadata-action@v5
+  uses: docker/metadata-action@v6
   with:
     images: ghcr.io/${{ github.repository }}
     tags: |
@@ -76,7 +72,7 @@ description: اتصال پروژه‌های کانتینری به GitHub Actions
       type=semver,pattern={{major}}
 ```
 
-با این تنظیم، اگر کامیت شما با تگ گیت `v1.0.1` همراه باشد، به‌طور همزمان تگ‌های `1.0.1`، `1.0` و `1` تولید و منتشر می‌شوند. خروجی این گام (`steps.meta.outputs.tags`) مستقیماً به اکشن بیلد تزریق می‌شود.
+با این تنظیم، زمانی که تگ گیت `v1.0.1` را منتشر می‌کنید، به‌طور همزمان تگ کامل `1.0.1`، ترکیب `1.0` و تگ `1` به همراه تگ کوتاه هش کامیت ساخته می‌شوند و خروجی این گام (`steps.meta.outputs.tags`) مستقیماً به اکشن بیلد تزریق می‌گردد.
 
 ---
 
@@ -86,7 +82,7 @@ description: اتصال پروژه‌های کانتینری به GitHub Actions
 
 ```yaml
 - name: Build and push Docker image
-  uses: docker/build-push-action@v5
+  uses: docker/build-push-action@v7
   with:
     context: .
     push: ${{ github.event_name != 'pull_request' }} # روی PRها فقط بیلد و تست شود و Push نشود
@@ -116,7 +112,7 @@ ENV APP_VERSION=${APP_VERSION}
 
 ```yaml
 - name: Build and push Docker image
-  uses: docker/build-push-action@v5
+  uses: docker/build-push-action@v7
   with:
     context: .
     push: true
@@ -155,10 +151,10 @@ jobs:
     name: Run Unit Tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
-          python-version: "3.11"
+          python-version: "3.12"
           cache: "pip"
       - run: |
           pip install -r requirements.txt pytest
@@ -170,13 +166,13 @@ jobs:
     if: github.event_name == 'push' # تنها در صورت ادغام نهایی روی شاخه اصلی بیلد و منتشر شود
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
 
       - name: Log in to GHCR
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
@@ -184,18 +180,18 @@ jobs:
 
       - name: Extract metadata
         id: meta
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v6
         with:
           images: ghcr.io/${{ github.repository }}
           tags: |
             type=sha,format=short,prefix=sha-
-            type=raw,value=latest
+            type=raw,value=latest,enable={{is_default_branch}}
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}
 
       - name: Build and Push
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v7
         with:
           context: .
           push: true

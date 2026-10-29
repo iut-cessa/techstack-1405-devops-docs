@@ -24,17 +24,17 @@ description: ساخت پایپ‌لاین یکپارچه‌سازی مداوم (
 ```yaml
 steps:
   - name: Checkout Code
-    uses: actions/checkout@v4
+    uses: actions/checkout@v7
 
   - name: Set up Python
-    uses: actions/setup-python@v5
+    uses: actions/setup-python@v7
     with:
-      python-version: "3.11"
+      python-version: "3.12"
       cache: "pip" # کش‌سازی خودکار وابستگی‌ها
 ```
 
-- اکشن `actions/checkout@v4` مخزن را با استفاده از Git در محیط رانر شبیه‌سازی می‌کند.
-- اکشن `actions/setup-python@v5` نسخه مشخص‌شده از زبان پایتون را در مسیر سیستم (`PATH`) قرار می‌دهد.
+- اکشن `actions/checkout@v7` مخزن را با استفاده از Git در محیط رانر شبیه‌سازی می‌کند.
+- اکشن `actions/setup-python@v7` نسخه مشخص‌شده از زبان پایتون را در مسیر سیستم (`PATH`) قرار می‌دهد.
 
 ---
 
@@ -94,13 +94,13 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        python-version: ["3.10", "3.11", "3.12"]
+        python-version: ["3.11", "3.12", "3.13"]
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -138,12 +138,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
-      - name: Set up Python 3.11
-        uses: actions/setup-python@v5
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v7
         with:
-          python-version: "3.11"
+          python-version: "3.12"
           cache: "pip"
 
       - name: Install dependencies
