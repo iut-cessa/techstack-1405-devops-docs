@@ -35,7 +35,7 @@ description: تسریع اجرای پایپ‌لاین‌ها با مکانیز�
   run: pytest --cov=app --cov-report=html
 
 - name: Upload Test Report
-  uses: actions/upload-artifact@v4
+  uses: actions/upload-artifact@v7
   with:
     name: test-coverage-report
     path: htmlcov/
@@ -45,13 +45,13 @@ description: تسریع اجرای پایپ‌لاین‌ها با مکانیز�
 ### ۲. دانلود کردن Artifact در جاب دیگر (`actions/download-artifact`)
 ```yaml
 - name: Download Test Report
-  uses: actions/download-artifact@v4
+  uses: actions/download-artifact@v8
   with:
     name: test-coverage-report
     path: downloaded-reports/
 ```
 
-کاربران و اعضای تیم نیز می‌توانند این فایل‌ها را مستقیماً از بخش Summary صفحه گردش کار دانلود و مشاهده کنند.
+کاربران و اعضای تیم نیز می‌توانند این فایل‌ها را مستقیماً از بخش Summary صفحه Workflow دانلود و مشاهده کنند.
 
 ---
 
@@ -66,7 +66,7 @@ description: تسریع اجرای پایپ‌لاین‌ها با مکانیز�
 
 ```yaml
 - name: Cache Python dependencies
-  uses: actions/cache@v4
+  uses: actions/cache@v5
   with:
     path: ~/.cache/pip
     key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
@@ -80,9 +80,9 @@ description: تسریع اجرای پایپ‌لاین‌ها با مکانیز�
 > **روش ساده‌تر در اکشن‌های رسمی:**  
 > اکشن `actions/setup-python` به صورت پیش‌فرض امکان کش‌سازی دارد:
 > ```yaml
-> - uses: actions/setup-python@v5
+> - uses: actions/setup-python@v7
 >   with:
->     python-version: '3.11'
+>     python-version: '3.12'
 >     cache: 'pip' # کش‌سازی خودکار و بهینه‌سازی شده
 > ```
 
@@ -90,7 +90,7 @@ description: تسریع اجرای پایپ‌لاین‌ها با مکانیز�
 
 ## بهینه‌سازی زمان اجرا: Concurrency و Timeout
 
-دو تنظیم بسیار مهم و حرفه‌ای برای بهینه‌سازی هزینه‌ها و منابع در فایل گردش کار:
+دو تنظیم بسیار مهم و حرفه‌ای برای بهینه‌سازی هزینه‌ها و منابع در فایل Workflow:
 
 ### ۱. لغو اجراهای قدیمی با `concurrency`
 فرض کنید توسعه‌دهنده‌ای روی یک PR سه کامیت پیاپی با فاصله ۳۰ ثانیه Push می‌کند. آیا نیاز است هر سه پایپ‌لاین تا انتها اجرا شوند؟ خیر! تنها نتیجه‌ی آخرین کامیت اهمیت دارد. با افزودن بلوک `concurrency`، اجرای کامیت‌های قبلی به‌طور خودکار لغو می‌شود:
